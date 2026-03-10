@@ -11,7 +11,7 @@ import (
 	"github.com/go-shiori/go-readability"
 	distiller "github.com/markusmobius/go-domdistiller"
 	"github.com/markusmobius/go-htmldate"
-	"github.com/markusmobius/go-trafilatura"
+	"github.com/savetoink/go-trafilatura/v2"
 	"golang.org/x/net/html"
 )
 
