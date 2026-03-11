@@ -1802,6 +1802,37 @@ func Test_NestedInline_Upstream22(test *testing.T) {
 	}
 }
 
+func Test_ImageNoDuplication(t *testing.T) {
+	// Test that images inside <p> are not duplicated
+	htmlStr := `<html><body>
+<h1>Test Article Title</h1>
+<p>This is some text content that is long enough to pass the extraction threshold. We need more text here to make sure the extractor considers this as valid content. Here is some additional text to increase the length significantly.</p>
+<p><img src="/js-blog/images/test.png" alt="test image"/></p>
+<p>This is more text content to ensure the article has enough length. The content extraction algorithm requires a minimum amount of text content before it will return results.</p>
+<p><img src="https://example.com/absolute.png" alt="absolute image"/></p>
+<p>Even more text to make sure we have a good length for the article extraction.</p>
+</body></html>`
+
+	originalURL, _ := nurl.ParseRequestURI("https://bloomberg.github.io/js-blog/post/temporal/")
+	relOpts := Options{OriginalURL: originalURL, IncludeImages: true}
+
+	result, err := Extract(strings.NewReader(htmlStr), relOpts)
+	assert.NoError(t, err)
+	assert.NotNil(t, result.ContentNode)
+
+	// Count images - should be exactly 2 (not 4)
+	htmlOutput := dom.OuterHTML(result.ContentNode)
+	imgCount := strings.Count(htmlOutput, "<img")
+	assert.Equal(t, 2, imgCount, "Should have exactly 2 images, not duplicated")
+
+	// Verify images are inside <p> tags
+	imgInPCount := strings.Count(htmlOutput, "<p><img")
+	assert.Equal(t, 2, imgInPCount, "Both images should be inside <p> tags")
+
+	// Verify no standalone images outside <p>
+	assert.Contains(t, htmlOutput, "</p><p>")
+}
+
 func Test_Links(t *testing.T) {
 	// Prepare options
 	linkOpts := Options{
