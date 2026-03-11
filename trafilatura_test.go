@@ -613,16 +613,16 @@ func Test_Images(t *testing.T) {
 	assert.False(t, isImageFile("test.txt"))
 
 	// Image handler
-	img := handleImage(nil)
+	img := handleImage(nil, defaultOpts)
 	assert.Nil(t, img)
 
-	img = handleImage(etree.FromString(`<img src="test.jpg"/>`))
+	img = handleImage(etree.FromString(`<img src="test.jpg"/>`), defaultOpts)
 	assert.NotNil(t, img)
 
-	img = handleImage(etree.FromString(`<img data-src="test.jpg" alt="text" title="a title"/>`))
+	img = handleImage(etree.FromString(`<img data-src="test.jpg" alt="text" title="a title"/>`), defaultOpts)
 	assert.NotNil(t, img)
 
-	img = handleImage(etree.FromString(`<img other="test.jpg"/>`))
+	img = handleImage(etree.FromString(`<img other="test.jpg"/>`), defaultOpts)
 	assert.Nil(t, img)
 
 	// Extension checker
@@ -679,7 +679,7 @@ func Test_Images(t *testing.T) {
 	// CNN example
 	f, _ = os.Open(filepath.Join("test-files", "simple", "cnn-image.html"))
 	doc, _ := html.Parse(f)
-	img = handleImage(dom.QuerySelector(doc, "img"))
+	img = handleImage(dom.QuerySelector(doc, "img"), defaultOpts)
 	assert.NotNil(t, img)
 	assert.True(t, dom.HasAttribute(img, "alt"))
 	assert.True(t, dom.HasAttribute(img, "src"))
@@ -687,11 +687,43 @@ func Test_Images(t *testing.T) {
 	// Modified CNN example
 	f, _ = os.Open(filepath.Join("test-files", "simple", "cnn-image-modified.html"))
 	doc, _ = html.Parse(f)
-	img = handleImage(dom.QuerySelector(doc, "img"))
+	cnnURL, _ := nurl.Parse("https://cnn.com/article.html")
+	cnnOpts := Options{OriginalURL: cnnURL}
+	img = handleImage(dom.QuerySelector(doc, "img"), cnnOpts)
 	assert.NotNil(t, img)
 	assert.True(t, dom.HasAttribute(img, "alt"))
 	assert.True(t, dom.HasAttribute(img, "src"))
 	assert.True(t, strings.HasPrefix(dom.GetAttribute(img, "src"), "http"))
+
+	// Test relative URL conversion
+	originalURL, _ := nurl.Parse("https://example.com/js-blog/article.html")
+	relOpts := Options{OriginalURL: originalURL}
+
+	img = handleImage(etree.FromString(`<img src="/js-blog/images/image3.jpg" alt="test"/>`), relOpts)
+	assert.NotNil(t, img)
+	assert.Equal(t, "https://example.com/js-blog/images/image3.jpg", dom.GetAttribute(img, "src"))
+
+	img = handleImage(etree.FromString(`<img src="../images/image.jpg" alt="test"/>`), relOpts)
+	assert.NotNil(t, img)
+	assert.Equal(t, "https://example.com/images/image.jpg", dom.GetAttribute(img, "src"))
+
+	img = handleImage(etree.FromString(`<img src="images/local.jpg" alt="test"/>`), relOpts)
+	assert.NotNil(t, img)
+	assert.Equal(t, "https://example.com/js-blog/images/local.jpg", dom.GetAttribute(img, "src"))
+
+	img = handleImage(etree.FromString(`<img data-src="/images/data.jpg" alt="test"/>`), relOpts)
+	assert.NotNil(t, img)
+	assert.Equal(t, "https://example.com/images/data.jpg", dom.GetAttribute(img, "src"))
+
+	// Test protocol-relative URLs
+	img = handleImage(etree.FromString(`<img src="//cdn.example.com/image.jpg" alt="test"/>`), relOpts)
+	assert.NotNil(t, img)
+	assert.Equal(t, "https://cdn.example.com/image.jpg", dom.GetAttribute(img, "src"))
+
+	// Test absolute URLs (should remain unchanged)
+	img = handleImage(etree.FromString(`<img src="https://example.com/full/path/image.jpg" alt="test"/>`), relOpts)
+	assert.NotNil(t, img)
+	assert.Equal(t, "https://example.com/full/path/image.jpg", dom.GetAttribute(img, "src"))
 }
 
 func Test_Links(t *testing.T) {

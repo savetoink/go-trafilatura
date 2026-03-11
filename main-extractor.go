@@ -341,7 +341,7 @@ func handleParagraphs(element *html.Node, potentialTags map[string]struct{}, cac
 			}
 
 		case inMap(childTag, mapXmlGraphicTags): // image
-			if imageElem := handleImage(child); imageElem != nil {
+			if imageElem := handleImage(child, opts); imageElem != nil {
 				child, _ = dom.ReplaceChild(child.Parent, imageElem, child)
 			}
 		}
@@ -479,7 +479,7 @@ func handleTable(tableElement *html.Node, potentialTags map[string]struct{}, cac
 }
 
 // handleImage process image element and their relevant attributes.
-func handleImage(element *html.Node) *html.Node {
+func handleImage(element *html.Node, opts Options) *html.Node {
 	if element == nil {
 		return nil
 	}
@@ -518,10 +518,10 @@ func handleImage(element *html.Node) *html.Node {
 		return nil
 	}
 
-	// Post process the URL
+	// Post process the URL - convert relative URLs to absolute
 	url := dom.GetAttribute(processedElement, "src")
-	if url != "" && strings.HasPrefix(url, "//") {
-		url = "http://" + strings.TrimPrefix(url, "//")
+	if url != "" {
+		url = createAbsoluteURL(url, opts.OriginalURL)
 		dom.SetAttribute(processedElement, "src", url)
 	}
 
@@ -556,7 +556,7 @@ func handleTextElem(element *html.Node, potentialTags map[string]struct{}, cache
 		}
 	} else if inMap(tagName, mapXmlGraphicTags) {
 		if _, exist := potentialTags["img"]; exist {
-			return handleImage(element)
+			return handleImage(element, opts)
 		}
 	}
 
