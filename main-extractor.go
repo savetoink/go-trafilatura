@@ -484,6 +484,12 @@ func handleImage(element *html.Node, opts Options) *html.Node {
 		return nil
 	}
 
+	// Skip processing if this element has already been marked as "done"
+	// This prevents duplication when the same image is processed multiple times
+	if element.Data == "done" {
+		return nil
+	}
+
 	processedElement := etree.Element(dom.TagName(element))
 
 	// Handle image source
@@ -524,6 +530,9 @@ func handleImage(element *html.Node, opts Options) *html.Node {
 		url = createAbsoluteURL(url, opts.OriginalURL)
 		dom.SetAttribute(processedElement, "src", url)
 	}
+
+	// Mark the original element as done to prevent re-processing
+	element.Data = "done"
 
 	return processedElement
 }
