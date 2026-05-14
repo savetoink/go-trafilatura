@@ -2641,7 +2641,7 @@ func Test_CodeBlocks(t *testing.T) {
 	result, _ = Extract(strings.NewReader(htmlInput), opts)
 
 	htmlOutput = etree.ToString(result.ContentNode)
-	assert.Contains(t, htmlOutput, `<code>$ pip install PyGithub</code>`)
+	assert.Contains(t, htmlOutput, `<pre>$ pip install PyGithub</pre>`)
 	assert.NotContains(t, htmlOutput, `<q>`)
 
 	// Inline code
@@ -2700,7 +2700,7 @@ func Test_CodeBlocks(t *testing.T) {
 	result, _ = Extract(strings.NewReader(htmlInput), opts)
 
 	htmlOutput = trim(dom.OuterHTML(result.ContentNode))
-	expected = `<code> import openai from openai_function_call import openai_function </code>`
+	expected = `<pre> import openai from openai_function_call import openai_function </pre>`
 	assert.Contains(t, htmlOutput, expected)
 	assert.NotContains(t, htmlOutput, `<q>`)
 
