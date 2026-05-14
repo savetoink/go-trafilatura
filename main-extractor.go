@@ -218,12 +218,19 @@ func isCodeBlockElement(element *html.Node) bool {
 
 // handleCodeBlocks turn element into a properly tagged code block.
 func handleCodeBlocks(element *html.Node) *html.Node {
+	originalTag := dom.TagName(element)
 	processedElement := dom.Clone(element, true)
 	for _, child := range etree.Iter(element) {
 		child.Data = "done"
 	}
 
-	processedElement.Data = "code"
+	// Preserve <pre> tags for proper whitespace semantics in HTML output.
+	// For non-<pre> code blocks (e.g. <div class="w3-code">), use <code>.
+	if originalTag == "pre" {
+		processedElement.Data = "pre"
+	} else {
+		processedElement.Data = "code"
+	}
 	for _, child := range etree.Iter(processedElement) {
 		child.Attr = nil
 	}

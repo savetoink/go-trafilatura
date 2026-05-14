@@ -550,7 +550,12 @@ func convertTags(tree *html.Node, opts Options) {
 			}
 		}
 
-		if codeFlag {
+		// Only rename <pre> to <code> if it doesn't already contain a <code>
+		// child. Preserving the <pre> wrapper maintains whitespace semantics
+		// for downstream HTML consumers (e-readers, browsers, etc.)
+		hasCodeChild := dom.QuerySelector(elem, "code") != nil
+
+		if codeFlag && !hasCodeChild {
 			elem.Data = "code"
 		}
 	}
