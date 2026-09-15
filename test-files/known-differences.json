@@ -40,6 +40,16 @@
       "test": "Test_Python220_Recovery/test_recall_escalation_blog_comment_leak",
       "assertions": 1,
       "reason": "Readeck includes eight comments outside the blog article wrapper."
+    },
+    {
+      "test": "Test_Python220_CodeAndFAQ/unit_tests.py/test_code_blocks/line_2965",
+      "assertions": 1,
+      "reason": "<pre> blocks that already contain a <code> child are kept as <pre> to preserve whitespace semantics for downstream consumers; upstream renames them to <code>."
+    },
+    {
+      "test": "Test_Python220_CodeAndFAQ/unit_tests.py/test_code_blocks/line_2991",
+      "assertions": 1,
+      "reason": "Same <pre> preservation divergence: the pre block stays <pre> instead of being renamed to <code>."
     }
   ]
 }
