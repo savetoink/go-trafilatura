@@ -29,8 +29,8 @@ import (
 	readability "codeberg.org/readeck/go-readability/v2"
 	"github.com/go-shiori/dom"
 	distiller "github.com/markusmobius/go-domdistiller"
-	"github.com/markusmobius/go-trafilatura/v2/internal/etree"
-	"github.com/markusmobius/go-trafilatura/v2/internal/selector"
+	"github.com/savetoink/go-trafilatura/v2/internal/etree"
+	"github.com/savetoink/go-trafilatura/v2/internal/selector"
 	"golang.org/x/net/html"
 )
 

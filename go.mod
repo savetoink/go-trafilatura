@@ -1,4 +1,4 @@
-module github.com/markusmobius/go-trafilatura/v2
+module github.com/savetoink/go-trafilatura/v2
 
 go 1.26.0
 

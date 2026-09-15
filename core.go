@@ -35,10 +35,10 @@ import (
 
 	"github.com/andybalholm/cascadia"
 	"github.com/go-shiori/dom"
-	"github.com/markusmobius/go-trafilatura/v2/internal/etree"
-	"github.com/markusmobius/go-trafilatura/v2/internal/lru"
-	"github.com/markusmobius/go-trafilatura/v2/internal/selector"
 	"github.com/rs/zerolog"
+	"github.com/savetoink/go-trafilatura/v2/internal/etree"
+	"github.com/savetoink/go-trafilatura/v2/internal/lru"
+	"github.com/savetoink/go-trafilatura/v2/internal/selector"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/charset"
 	"golang.org/x/text/runes"

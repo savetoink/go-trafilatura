@@ -31,7 +31,7 @@ import (
 
 	xmltree "github.com/beevik/etree"
 	"github.com/go-shiori/dom"
-	"github.com/markusmobius/go-trafilatura/v2/internal/etree"
+	"github.com/savetoink/go-trafilatura/v2/internal/etree"
 	"golang.org/x/net/html"
 )
 
